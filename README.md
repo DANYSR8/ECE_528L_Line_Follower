@@ -29,3 +29,50 @@ void Chassis_Board_LEDs_Init()
 ```
 
 ### Print Tenth Function
+
+
+```c
+
+#include <stdio.h>
+void Print_Tenth();
+
+
+
+int main()
+{
+Print_Tenth();
+return 0;
+}
+
+
+
+void Print_Tenth()
+{
+
+int start_count = 10; 
+int end_count = 51; 
+
+for(int i = start_count; i<51 ; i++){
+    
+    if(i % start_count == 0) 
+    {
+    printf("Index %d: Every 10th iteration.\n",i);
+    } 
+    
+    else if(i % start_count == 1)
+    {
+    printf("Index %d: Following the 10th iteration.\n",i);  
+    }
+    
+    else
+    {
+    printf("NA \n");    
+    }
+    
+    }
+}
+
+
+
+
+```
