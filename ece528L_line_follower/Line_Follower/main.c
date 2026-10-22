@@ -26,17 +26,19 @@
 #include "inc/Clock.h"
 #include "inc/CortexM.h"
 #include "inc/GPIO.h"
-#include "inc/EUSCT_A0_UART.h"
+#include "inc/EUSCI_A0_UART.h"
 #include "inc/Motor.h"
 #include "inc/Timer_A1_Interrupt.h"
 #include "inc/SysTick_Interrupt.h"
-#incldue "inc/Reflectance_Sensor.h"
+#include "inc/Reflectance_Sensor.h"
 
-// Default PWM  value 
-#define PWM_NOMINAL 2500
+// Initalixzation of Constant Values
+#define PWM_NOMINAL     2500
+#define FWD_DUTY        PWM_NOMINAL
+#define STEER_FAST      PWM_NOMINAL
+#define STEER_SLOW      (PWM_NOMINAL / 2)
+#define PIVOT_DUTY      PWM_NOMINAL
 
-// Initalization TimerA1 
-static uint32_t Timer_A1_ms_elapsed = 0; 
 
 // Definitions for Reflectance Sensor State
 typedef enum 
@@ -53,66 +55,82 @@ typedef enum
 } Line_Position;
 
 
+typedef enum
+{
+    FOLLOWING_PATH,
+    FINDING_PATH,
+    RETURNING,
+    STOPPED,
+
+} Robot_State;
+
+
+
+// Initalization of Global Varibles
+static uint32_t Timer_A1_ms_elapsed = 0;
+Robot_State Current_Robot_State = FOLLOWING_PATH ;
+
+
 // Reflection Sensors State Readout Function
-void Detect_Line_Position(uint8_t reflectance_sensor_data){
+uint8_t Detect_Line_Position(uint8_t reflectance_sensor_data){
     
     switch(reflectance_sensor_data){
         
         case 0x18:
-        printf("Center");
+        printf("Center\n");
         LED1_Output(RED_LED_OFF);
         LED2_Output(RGB_LED_GREEN);
         break;
         
         case 0x1C:
-        printf("Slightly Left from Center");
+        printf("Slightly Left from Center\n");
         LED1_Output(RED_LED_OFF);
         LED2_Output(RGB_LED_YELLOW);
         break;
         
         case 0x38:
-        printf("Slightly Right from Center");
+        printf("Slightly Right from Center\n");
         LED1_Output(RED_LED_OFF);
         LED2_Output(RGB_LED_PINK);
         break;
                 
                 
         case 0x01:
-        printf("Far Left from Center");
+        printf("Far Left from Center\n");
         LED1_Output(RED_LED_OFF);
         LED2_Output(RGB_LED_WHITE);
         break;
 
         case 0x80:
-        printf("Far Right from Center");
+        printf("Far Right from Center\n");
         LED1_Output(RED_LED_OFF);
         LED2_Output(RGB_LED_SKY_BLUE);
         break;
         
                 
         case 0xF8:
-        printf("Left Turn"); 
+        printf("Left Turn\n");
         LED1_Output(RED_LED_ON);
         LED2_Output(RGB_LED_WHITE);
         break;
         
         
         case 0x1F:
-        printf("Right Turn");
+        printf("Right Turn\n");
         LED1_Output(RED_LED_ON);
         LED2_Output(RGB_LED_SKY_BLUE);
         break;
                 
                 
         case 0xFF:
-        printf("T-Intersection");
+        printf("T-Intersection\n");
         LED1_Output(RED_LED_ON);
         LED2_Output(RGB_LED_BLUE);
         break;
                 
         
         case 0x00:
-        printf("Dead End");
+        printf("Dead End \n");
         LED1_Output(RED_LED_ON);
         LED2_Output(RGB_LED_RED);
         break;
@@ -126,6 +144,7 @@ void Detect_Line_Position(uint8_t reflectance_sensor_data){
     
     }
     
+   return reflectance_sensor_data;
 }
 
 
@@ -134,18 +153,24 @@ void Timer_A1_Periodic_Task(void)
 
 Timer_A1_ms_elapsed++;
 
-if ((Timer_A1_ms_elapsed % 10) == 0)
-{
- Reflectance_Sensor_Start();
+    if ((Timer_A1_ms_elapsed % 10) == 0)
+    {
+     Reflectance_Sensor_Start();
+    }
+
+    if((Timer_A1_ms_elapsed % 10) == 1)
+    {
+        uint8_t Reflectance_Sensor_Data = Reflectance_Sensor_End();
+        Detect_Line_Position(Reflectance_Sensor_Data);
+    }
+
 }
 
-if((Timer_A1_ms_elapsed % 10) == 1)
-{
-    uint8_t Reflectance_Sensor_Data = Reflectance_Sensor_End();
-    Detect_Line_Position(Reflectance_Sensor_Data);
-}
+// Need to add switch cases functiuons for the followinf
 
-
+//Controller functuin that deterimne the state of the robot
+//Line following function that controls the mottor s
+//Functions that make sure we dont get false state switch for unkown sates, or T instersections
 
 
 int main(void)
