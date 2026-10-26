@@ -299,13 +299,13 @@ void Controller(uint8_t reflectance_sensor_data)
             {
                 t_count = 0 ;
                 DeadEnd_count = 0;
-                Motor_Forward(FWD_DUTY, FWD_DUTY);      // line found, head back
+                Motor_Forward(FWD_DUTY, FWD_DUTY);     
                 Current_Robot_State = RETURNING;
             }
 
             else
             {
-                Motor_Right(PIVOT_DUTY, PIVOT_DUTY);    // keep spinning
+                Motor_Right(PIVOT_DUTY, PIVOT_DUTY);   
             }
             break;
 
