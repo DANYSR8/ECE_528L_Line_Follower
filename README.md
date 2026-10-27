@@ -466,6 +466,11 @@ void update_Counters(uint8_t reflectance_sensor_data)
 
 With these functions implemented and the parameters fine-tuned, we were able to get the robot to successfully complete a line following course. The following video diaplays that run and can also be found in the results folder of this repo.
 
+Link to Successful Run: 
+
+https://drive.google.com/file/d/1L1a1ckwoUCI35kEG2TTy30uqGOnVh2c0/view?usp=sharing
+
+
 
 
 
